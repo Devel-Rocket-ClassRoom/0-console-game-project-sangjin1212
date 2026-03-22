@@ -4,6 +4,7 @@ using Framework.Engine;
 public class Game : GameApp
 {
     private readonly SceneManager<Scene> _scenes = new SceneManager<Scene>();
+
     public Game() : base(60, 30)
     { 
     
@@ -41,6 +42,7 @@ public class Game : GameApp
     public void ChangeToPlay()
     {
         var play = new PlayScene();
+        play.TitleRequested += ChangeToTitle;
         _scenes.ChangeScene(play);
     }
 }
