@@ -321,7 +321,7 @@ public class PlayScene : Scene
             for (int row = BoardSize - 1; row >= 0; row--)
             {
                 if (board[row, col] != 0)
-                {
+                {   
                     number[targetRow] = board[row, col];
                     targetRow--;
                 }
@@ -340,7 +340,7 @@ public class PlayScene : Scene
     //클리어 조건
     private bool CheckClear()
     {
-        for (int row = 0; row < BoardSize; row++)
+        for (int row = 0; row < BoardSize; row++)       
         {
             for (int col = 0; col < BoardSize; col++)
             {
@@ -391,6 +391,7 @@ public class PlayScene : Scene
         }
         return true;
     }
+    //빈칸확인
     private (int row, int col) GetRandomEmptyCell()
     {
         List<(int row, int col)> empty = new List<(int row, int col)>();
@@ -411,6 +412,7 @@ public class PlayScene : Scene
         }
         return empty[rand.Next(empty.Count)];
     }
+    //랜덤 빈칸에 숫자 넣기
     private void SpawnTile()
     { 
         var (row, col) = GetRandomEmptyCell();
