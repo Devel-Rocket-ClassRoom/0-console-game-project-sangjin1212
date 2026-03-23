@@ -8,6 +8,9 @@ public class PlayScene : Scene
     private const int BoardSize = 4;
     private readonly int[,] board = new int[BoardSize,BoardSize];
 
+    int CellWidth = 8;
+    int CellHeight = 4;
+
     private bool IsMove;
     private bool IsGameOver;
     private bool IsClear;
@@ -17,6 +20,8 @@ public class PlayScene : Scene
     {
         SpawnTile();
         SpawnTile();
+       
+
         // Clear 테스트용
         //board[0, 0] = 1024;
         //board[0, 1] = 1024;
@@ -440,20 +445,17 @@ public class PlayScene : Scene
     }
     private void DrawBoard(ScreenBuffer buffer)
     {
-        int startX = 4;
-        int startY = 5;
-
-        int cellWidth = 8;
-        int cellHeight = 4;
+        int startX = 14;
+        int startY = 7;
 
         for (int row = 0; row < BoardSize; row++)
         {
             for (int col = 0; col < BoardSize; col++)
             {
-                int x = startX + col * cellWidth;
-                int y = startY + row * cellHeight;
+                int x = startX + col * CellWidth;
+                int y = startY + row * CellHeight;
 
-                buffer.DrawBox(x, y, cellWidth, cellHeight, ConsoleColor.DarkYellow);
+                buffer.DrawBox(x, y, CellWidth, CellHeight, ConsoleColor.DarkYellow);
 
                 int value = board[row, col];
 
@@ -461,7 +463,7 @@ public class PlayScene : Scene
                 {
                     string text = value.ToString();
 
-                    int textX = x + (cellWidth - text.Length) / 2;
+                    int textX = x + (CellWidth - text.Length) / 2;
                     int textY = y + 1;
 
                     buffer.WriteText(textX, textY, text, GetTileColor(value));
@@ -469,34 +471,52 @@ public class PlayScene : Scene
             }
         }
     }
+    private void DrawResultPopup(ScreenBuffer buffer, string message, ConsoleColor color)
+    {
+        int boxX = 18;
+        int boxY = 11;
+        int boxWidth = 24;
+        int boxHeight = 6;
+
+        buffer.DrawBox(boxX, boxY, boxWidth, boxHeight, color);
+
+        buffer.WriteTextCentered(boxY + 1, message, color);
+        buffer.WriteTextCentered(boxY + 3, "ENTER : Title", ConsoleColor.White);
+        buffer.WriteTextCentered(boxY + 4, "ESC : Quit", ConsoleColor.White);
+    }
     public override void Draw(ScreenBuffer buffer)
     {
-
+        // 상단 제목
         buffer.WriteTextCentered(1, "2048", ConsoleColor.Yellow);
-        buffer.DrawBox(2, 3, 36, 20, ConsoleColor.DarkYellow);
-        buffer.DrawBox(40, 3, 18, 10, ConsoleColor.White);
-        buffer.WriteText(46, 4, "INFO", ConsoleColor.Cyan);
-        if (IsClear)
+
+        // 상단 짧은 설명
+        buffer.WriteTextCentered(3, "Arrow Key : Move Tiles", ConsoleColor.Gray);
+
+        // 보드 바깥 테두리
+        buffer.DrawBox(12, 5, 36, 20, ConsoleColor.DarkYellow);
+
+        // 실제 보드
+        DrawBoard(buffer);
+
+        // 하단 안내
+        if (IsClear || IsGameOver)
         {
-            buffer.WriteText(43, 7, "CLEAR!", ConsoleColor.Green);
-            buffer.WriteTextCentered(28, "You made 2048! Press ENTER", ConsoleColor.Green);
-        }
-        else if (IsGameOver)
-        {
-            buffer.WriteText(41, 7, "GAME OVER", ConsoleColor.Red);
-            buffer.WriteTextCentered(28, "No more moves! Press ENTER", ConsoleColor.Red);
+            buffer.WriteTextCentered(27, "ENTER : Title   ESC : Quit", ConsoleColor.White);
         }
         else
         {
-            buffer.WriteText(43, 7, "PLAYING", ConsoleColor.Gray);
-            buffer.WriteTextCentered(28, "Use Arrow Keys to move tiles", ConsoleColor.DarkGray);
+            buffer.WriteTextCentered(27, "Merge same numbers to make 2048", ConsoleColor.DarkGray);
         }
 
-        buffer.DrawBox(40, 14, 18, 10, ConsoleColor.DarkGray);
-        buffer.WriteText(45, 15, "KEY", ConsoleColor.Cyan);
-        buffer.WriteText(42, 17, "Arrow : Move", ConsoleColor.White);
-        buffer.WriteText(42, 18, "ESC : Quit", ConsoleColor.White);
-        DrawBoard(buffer);
+        // 게임 종료 상태일 때만 팝업
+        if (IsClear)
+        {
+            DrawResultPopup(buffer, "CLEAR!", ConsoleColor.Green);
+        }
+        else if (IsGameOver)
+        {
+            DrawResultPopup(buffer, "GAME OVER", ConsoleColor.Red);
+        }
     }
 }
 
